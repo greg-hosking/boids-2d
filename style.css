@@ -14,7 +14,7 @@ div#before-canvas-container {
   gap: 1em;
 }
 
-div#before-canvas-container > h1 {
+div#before-canvas-container>h1 {
   margin-right: auto;
 }
 
@@ -44,39 +44,49 @@ div#after-canvas-container {
 canvas {
   display: block;
   margin: 0 auto;
-  border: 2px solid black;
+  /* border: 2px solid black; */
 }
 
 body {
-  background-color: #e0f7fa; /* Light blue background, reminiscent of shallow ocean water */
-  color: #0277bd; /* Darker blue for text, representing deeper water */
-  font-family: 'Arial', sans-serif; /* Clean, simple font */
+  background-color: #e0f7fa;
+  /* Light blue background, reminiscent of shallow ocean water */
+  color: #0277bd;
+  /* Darker blue for text, representing deeper water */
+  font-family: 'Arial', sans-serif;
+  /* Clean, simple font */
   margin: 0;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
-h1, h2, h3 {
-  color: #01579b; /* Even darker blue for headings */
+h1,
+h2,
+h3 {
+  color: #01579b;
+  /* Even darker blue for headings */
 }
 
 /* Customizes the whole scrollbar */
 ::-webkit-scrollbar {
-  width: 10px; /* Adjust the width of the scrollbar */
+  width: 10px;
+  /* Adjust the width of the scrollbar */
 }
 
 /* Customizes the scrollbar track */
 ::-webkit-scrollbar-track {
-  background: #b3e5fc; /* Light blue, like calm ocean water */
+  background: #b3e5fc;
+  /* Light blue, like calm ocean water */
   /* border-radius: 10px; */
 }
 
 /* Customizes the scrollbar thumb (the part that you drag) */
 ::-webkit-scrollbar-thumb {
-  background: #0288d1; /* Deeper ocean blue */
+  background: #0288d1;
+  /* Deeper ocean blue */
   /* border-radius: 10px; */
 }
 
 /* Customizes the scrollbar thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #0277bd; /* Slightly different blue for hover effect */
+  background: #0277bd;
+  /* Slightly different blue for hover effect */
 }
