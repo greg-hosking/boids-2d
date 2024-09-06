@@ -1,555 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Boids Simulation 2D</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boids Simulation 2D</title>
+        <link rel="stylesheet" href="style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+        <!------------------------------------------>
+        <!-- JavaScript parameters and boid class -->
+        <!------------------------------------------>
+        <script>
+            const boids = [];
+            const parameters = {
+                avoidFactor: {
+                    id: "avoid-factor",
+                    name: "Avoid Factor",
+                    description:
+                        "The avoid factor behavior is used to avoid collisions between boids. It is calculated by finding the distance between each boid and then moving away from the boid if it is too close.",
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    default: 0.05,
+                    value: 0.05,
+                },
+                matchingFactor: {
+                    id: "matching-factor",
+                    name: "Matching Factor",
+                    description:
+                        "The matching factor behavior is used to make boids move in the same direction as the other boids. It is calculated by finding the average velocity of the boids and then moving towards that direction.",
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    default: 0.05,
+                    value: 0.05,
+                },
+                centeringFactor: {
+                    id: "centering-factor",
+                    name: "Centering Factor",
+                    description:
+                        "The centering factor behavior is used to make boids move towards the center of the group. It is calculated by finding the average position of the boids and then moving towards that position.",
+                    min: 0,
+                    max: 1,
+                    step: 0.0001,
+                    default: 0.0005,
+                    value: 0.0005,
+                },
+                visualRange: {
+                    id: "visual-range",
+                    name: "Visual Range",
+                    description:
+                        "The visual range is the distance at which a boid can see other boids. If a boid is within the visual range of another boid, it will be affected by the matching and centering factors.",
+                    min: 0,
+                    max: 1280,
+                    step: 1,
+                    default: 200,
+                    value: 200,
+                    visualized: false,
+                },
+                protectedRange: {
+                    id: "protected-range",
+                    name: "Protected Range",
+                    description:
+                        "The protected range is the distance at which a boid will avoid other boids. If a boid is within the protected range of another boid, it will be affected by the avoid factor behavior.",
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    default: 40,
+                    value: 40,
+                    visualized: false,
+                },
+                minSpeed: {
+                    id: "min-speed",
+                    name: "Min Speed",
+                    description: "The minimum speed at which a boid can move.",
+                    min: 0.01,
+                    max: 10,
+                    step: 0.01,
+                    default: 3,
+                    value: 3,
+                },
+                maxSpeed: {
+                    id: "max-speed",
+                    name: "Max Speed",
+                    description: "The maximum speed at which a boid can move.",
+                    min: 0.01,
+                    max: 10,
+                    step: 0.01,
+                    default: 6,
+                    value: 6,
+                },
+                margin: {
+                    name: "Margin",
+                    description:
+                        "The margin is the distance at which a boid will turn around if it gets too close to the edge of the screen.",
+                    min: 0,
+                    max: 9999,
+                    step: 1,
+                    default: 100,
+                    value: 100,
+                    visualized: false,
+                },
+                turnFactor: {
+                    id: "turn-factor",
+                    name: "Turn Factor",
+                    description:
+                        "The turn factor is the distance at which a boid will avoid obstacles. If a boid is within the turn factor range of an obstacle, it will be affected by the avoid factor behavior.",
+                    min: 0,
+                    max: 1,
+                    step: 0.01,
+                    default: 0.2,
+                    value: 0.2,
+                },
+            };
 
-  <!------------------------------------------>
-  <!-- JavaScript parameters and boid class -->
-  <!------------------------------------------>
-  <script>
-    const boids = [];
-    const parameters = {
-      avoidFactor: {
-        id: "avoid-factor",
-        name: "Avoid Factor",
-        description:
-          "The avoid factor behavior is used to avoid collisions between boids. It is calculated by finding the distance between each boid and then moving away from the boid if it is too close.",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        default: 0.05,
-        value: 0.05,
-      },
-      matchingFactor: {
-        id: "matching-factor",
-        name: "Matching Factor",
-        description:
-          "The matching factor behavior is used to make boids move in the same direction as the other boids. It is calculated by finding the average velocity of the boids and then moving towards that direction.",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        default: 0.05,
-        value: 0.05,
-      },
-      centeringFactor: {
-        id: "centering-factor",
-        name: "Centering Factor",
-        description:
-          "The centering factor behavior is used to make boids move towards the center of the group. It is calculated by finding the average position of the boids and then moving towards that position.",
-        min: 0,
-        max: 1,
-        step: 0.0001,
-        default: 0.0005,
-        value: 0.0005,
-      },
-      visualRange: {
-        id: "visual-range",
-        name: "Visual Range",
-        description:
-          "The visual range is the distance at which a boid can see other boids. If a boid is within the visual range of another boid, it will be affected by the matching and centering factors.",
-        min: 0,
-        max: 1280,
-        step: 1,
-        default: 200,
-        value: 200,
-        visualized: false,
-      },
-      protectedRange: {
-        id: "protected-range",
-        name: "Protected Range",
-        description:
-          "The protected range is the distance at which a boid will avoid other boids. If a boid is within the protected range of another boid, it will be affected by the avoid factor behavior.",
-        min: 0,
-        max: 100,
-        step: 1,
-        default: 40,
-        value: 40,
-        visualized: false,
-      },
-      minSpeed: {
-        id: "min-speed",
-        name: "Min Speed",
-        description: "The minimum speed at which a boid can move.",
-        min: 0.01,
-        max: 10,
-        step: 0.01,
-        default: 3,
-        value: 3,
-      },
-      maxSpeed: {
-        id: "max-speed",
-        name: "Max Speed",
-        description: "The maximum speed at which a boid can move.",
-        min: 0.01,
-        max: 10,
-        step: 0.01,
-        default: 6,
-        value: 6,
-      },
-      margin: {
-        name: "Margin",
-        description:
-          "The margin is the distance at which a boid will turn around if it gets too close to the edge of the screen.",
-        min: 0,
-        max: 9999,
-        step: 1,
-        default: 100,
-        value: 100,
-        visualized: false,
-      },
-      turnFactor: {
-        id: "turn-factor",
-        name: "Turn Factor",
-        description:
-          "The turn factor is the distance at which a boid will avoid obstacles. If a boid is within the turn factor range of an obstacle, it will be affected by the avoid factor behavior.",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        default: 0.2,
-        value: 0.2,
-      },
-    };
+            class Boid {
+                constructor(x, y, w = 10, h = 20) {
+                    this.position = createVector(x, y);
+                    this.velocity = createVector(random(-1, 1), random(-1, 1));
+                    this.width = w;
+                    this.height = h;
+                }
 
-    class Boid {
-      constructor(x, y, w = 10, h = 20) {
-        this.position = createVector(x, y);
-        this.velocity = createVector(random(-1, 1), random(-1, 1));
-        this.width = w;
-        this.height = h;
-      }
+                update() {
+                    let averagePosition = createVector();
+                    let averageVelocity = createVector();
+                    let neighbors = 0;
+                    let avoidDirection = createVector();
 
-      update() {
-        let averagePosition = createVector();
-        let averageVelocity = createVector();
-        let neighbors = 0;
-        let avoidDirection = createVector();
+                    for (const otherBoid of boids) {
+                        if (otherBoid === this) {
+                            continue;
+                        }
 
-        for (const otherBoid of boids) {
-          if (otherBoid === this) {
-            continue;
-          }
+                        const distanceToOtherBoid = dist(
+                            this.position.x,
+                            this.position.y,
+                            otherBoid.position.x,
+                            otherBoid.position.y
+                        );
+                        // If the other boid is within the visual range of this boid...
+                        if (
+                            distanceToOtherBoid < parameters.visualRange.value
+                        ) {
+                            // If the other boid is within the protected range of this boid...
+                            if (
+                                distanceToOtherBoid <
+                                parameters.protectedRange.value
+                            ) {
+                                avoidDirection.add(
+                                    p5.Vector.sub(
+                                        this.position,
+                                        otherBoid.position
+                                    )
+                                );
+                            }
+                            // If the other boid is outside the protected range of this boid,
+                            // but still within the visual range...
+                            else {
+                                averagePosition.add(otherBoid.position);
+                                averageVelocity.add(otherBoid.velocity);
+                                neighbors++;
+                            }
+                        }
+                    }
 
-          const distanceToOtherBoid = dist(
-            this.position.x,
-            this.position.y,
-            otherBoid.position.x,
-            otherBoid.position.y
-          );
-          // If the other boid is within the visual range of this boid...
-          if (distanceToOtherBoid < parameters.visualRange.value) {
-            // If the other boid is within the protected range of this boid...
-            if (distanceToOtherBoid < parameters.protectedRange.value) {
-              avoidDirection.add(
-                p5.Vector.sub(this.position, otherBoid.position)
-              );
+                    if (neighbors > 0) {
+                        averagePosition.div(neighbors);
+                        averageVelocity.div(neighbors);
+
+                        // Add the centering and matching factors to the velocity.
+                        this.velocity
+                            .add(
+                                averagePosition
+                                    .sub(this.position)
+                                    .mult(parameters.centeringFactor.value)
+                            )
+                            .add(
+                                averageVelocity
+                                    .sub(this.velocity)
+                                    .mult(parameters.matchingFactor.value)
+                            );
+                    }
+
+                    // Add the avoid factor to the velocity.
+                    this.velocity.add(
+                        avoidDirection.mult(parameters.avoidFactor.value)
+                    );
+
+                    // If the boid is too close to the edge of the screen, apply the turn factor.
+                    if (this.position.x < parameters.margin.value) {
+                        this.velocity.add(
+                            createVector(parameters.turnFactor.value, 0)
+                        );
+                    } else if (
+                        this.position.x >
+                        width - parameters.margin.value
+                    ) {
+                        this.velocity.add(
+                            createVector(-parameters.turnFactor.value, 0)
+                        );
+                    }
+                    if (this.position.y < parameters.margin.value) {
+                        this.velocity.add(
+                            createVector(0, parameters.turnFactor.value)
+                        );
+                    } else if (
+                        this.position.y >
+                        height - parameters.margin.value
+                    ) {
+                        this.velocity.add(
+                            createVector(0, -parameters.turnFactor.value)
+                        );
+                    }
+
+                    // Limit the speed of the boid.
+                    this.velocity.limit(parameters.maxSpeed.value);
+                    if (this.velocity.mag() < parameters.minSpeed.value) {
+                        this.velocity.setMag(parameters.minSpeed.value);
+                    }
+
+                    // Move the boid.
+                    this.position.add(this.velocity);
+                }
+
+                draw() {
+                    push();
+                    this.drawBody();
+                    this.drawTail();
+                    pop();
+
+                    if (parameters.visualRange.visualized) {
+                        this.drawVisualRange();
+                    }
+                    if (parameters.protectedRange.visualized) {
+                        this.drawProtectedRange();
+                    }
+                }
+
+                drawBody() {
+                    translate(this.position.x, this.position.y);
+                    rotate(this.velocity.heading() + PI / 2); // Rotate the boid to align with the velocity vector
+                    fill(255);
+                    stroke(0);
+                    ellipse(0, 0, this.width, this.height);
+                }
+
+                drawTail() {
+                    const tailWidth = this.width * 0.8;
+                    const tailHeight = this.height / 2;
+
+                    translate(0, this.height); // Move the origin to the back of the boid
+                    rotate(PI / 2); // Rotate the triangle 180 degrees to align with the back of the boid
+                    fill(255);
+                    stroke(0);
+                    beginShape();
+                    vertex(-this.width / 2, -tailWidth); // Left point of the triangle
+                    vertex(-tailHeight, 0); // Tip of the triangle (back of the boid)
+                    vertex(-this.width / 2, tailWidth); // Right point of the triangle
+                    endShape(CLOSE);
+                }
+
+                drawVisualRange() {
+                    noFill();
+                    stroke(255);
+                    circle(
+                        this.position.x,
+                        this.position.y,
+                        parameters.visualRange.value
+                    );
+                    noStroke();
+                }
+
+                drawProtectedRange() {
+                    noFill();
+                    stroke(255, 0, 0);
+                    circle(
+                        this.position.x,
+                        this.position.y,
+                        parameters.protectedRange.value
+                    );
+                    noStroke();
+                }
             }
-            // If the other boid is outside the protected range of this boid,
-            // but still within the visual range...
-            else {
-              averagePosition.add(otherBoid.position);
-              averageVelocity.add(otherBoid.velocity);
-              neighbors++;
+        </script>
+    </head>
+
+    <body>
+        <!-- <div id="before-canvas-container">
+            <h1>Boids Simulation 2D</h1>
+            <h2>Greg Hosking</h2>
+            <a href="https://github.com/greg-hosking" target="_blank"
+                ><i class="fa fa-github"></i
+            ></a>
+            <a href="https://www.linkedin.com/in/greg-hosking/" target="_blank"
+                ><i class="fa fa-linkedin-square"></i
+            ></a>
+        </div>
+        <div id="canvas-container"></div>
+        <div id="after-canvas-container">
+            <div id="parameters-container">
+                <h2>Parameters</h2>
+                <div id="sliders-container"></div>
+                <button>Reset</button>
+                <button>Randomize</button>
+                <button>Save</button>
+                <button>Load</button>
+            </div> -->
+        <!-- <div id="controls-container">
+                <h2>Controls</h2>
+                <button>Reset</button>
+                <button>Play</button>
+                <button>Pause</button>
+                <button>Fast-forward</button>
+            </div> -->
+        <!-- </div> -->
+
+        <div id="main-container">
+            <div id="before-canvas-container">
+                <h1>Boids Simulation 2D</h1>
+                <h2>Greg Hosking</h2>
+                <a href="https://github.com/greg-hosking" target="_blank"
+                    ><i class="fa fa-github"></i
+                ></a>
+                <a
+                    href="https://www.linkedin.com/in/greg-hosking/"
+                    target="_blank"
+                    ><i class="fa fa-linkedin-square"></i
+                ></a>
+            </div>
+            <div id="canvas-and-parameters">
+                <div id="canvas-container"></div>
+                <div id="after-canvas-container">
+                    <div id="parameters-container">
+                        <h2>Parameters</h2>
+                        <div id="sliders-container"></div>
+                        <button>Reset</button>
+                        <button>Randomize</button>
+                        <button>Save</button>
+                        <button>Load</button>
+                    </div>
+                    <div id="controls-container">
+                        <h2>Controls</h2>
+                        <button>Reset</button>
+                        <button>Play</button>
+                        <button>Pause</button>
+                        <button>Fast-forward</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!---------------->
+        <!-- JavaScript -->
+        <!---------------->
+        <script>
+            let particles = [];
+
+            function setup() {
+                // const canvas = createCanvas(1280, 720);
+                const canvas = createCanvas(1920, 1080);
+                canvas.parent("canvas-container");
+
+                createParamSliders();
+
+                for (let i = 0; i < 100; i++) {
+                    // Example: 100 particles
+                    particles.push({
+                        x: random(width),
+                        y: random(height),
+                        noiseOffsetX: random(1000),
+                        noiseOffsetY: random(1000),
+                    });
+                }
+
+                // Create a number of boids and add them to the boids array.
+                for (let i = 0; i < 200; i++) {
+                    boids.push(
+                        new Boid(random(canvas.width), random(canvas.height))
+                    );
+                }
             }
-          }
-        }
-
-        if (neighbors > 0) {
-          averagePosition.div(neighbors);
-          averageVelocity.div(neighbors);
-
-          // Add the centering and matching factors to the velocity.
-          this.velocity
-            .add(
-              averagePosition
-                .sub(this.position)
-                .mult(parameters.centeringFactor.value)
-            )
-            .add(
-              averageVelocity
-                .sub(this.velocity)
-                .mult(parameters.matchingFactor.value)
-            );
-        }
-
-        // Add the avoid factor to the velocity.
-        this.velocity.add(avoidDirection.mult(parameters.avoidFactor.value));
-
-        // If the boid is too close to the edge of the screen, apply the turn factor.
-        if (this.position.x < parameters.margin.value) {
-          this.velocity.add(createVector(parameters.turnFactor.value, 0));
-        } else if (this.position.x > width - parameters.margin.value) {
-          this.velocity.add(createVector(-parameters.turnFactor.value, 0));
-        }
-        if (this.position.y < parameters.margin.value) {
-          this.velocity.add(createVector(0, parameters.turnFactor.value));
-        } else if (this.position.y > height - parameters.margin.value) {
-          this.velocity.add(createVector(0, -parameters.turnFactor.value));
-        }
-
-        // Limit the speed of the boid.
-        this.velocity.limit(parameters.maxSpeed.value);
-        if (this.velocity.mag() < parameters.minSpeed.value) {
-          this.velocity.setMag(parameters.minSpeed.value);
-        }
-
-        // Move the boid.
-        this.position.add(this.velocity);
-      }
-
-      draw() {
-        push();
-        this.drawBody();
-        this.drawTail();
-        pop();
-
-        if (parameters.visualRange.visualized) {
-          this.drawVisualRange();
-        }
-        if (parameters.protectedRange.visualized) {
-          this.drawProtectedRange();
-        }
-      }
-
-      drawBody() {
-        translate(this.position.x, this.position.y);
-        rotate(this.velocity.heading() + PI / 2); // Rotate the boid to align with the velocity vector
-        fill(255);
-        stroke(0);
-        ellipse(0, 0, this.width, this.height);
-      }
-
-      drawTail() {
-        const tailWidth = this.width * 0.8;
-        const tailHeight = this.height / 2;
-
-        translate(0, this.height); // Move the origin to the back of the boid
-        rotate(PI / 2); // Rotate the triangle 180 degrees to align with the back of the boid
-        fill(255);
-        stroke(0);
-        beginShape();
-        vertex(-this.width / 2, -tailWidth); // Left point of the triangle
-        vertex(-tailHeight, 0); // Tip of the triangle (back of the boid)
-        vertex(-this.width / 2, tailWidth); // Right point of the triangle
-        endShape(CLOSE);
-      }
-
-      drawVisualRange() {
-        noFill();
-        stroke(255);
-        circle(
-          this.position.x,
-          this.position.y,
-          parameters.visualRange.value
-        );
-        noStroke();
-      }
-
-      drawProtectedRange() {
-        noFill();
-        stroke(255, 0, 0);
-        circle(
-          this.position.x,
-          this.position.y,
-          parameters.protectedRange.value
-        );
-        noStroke();
-      }
-    }
-  </script>
-</head>
-
-<body>
-  <!-- <div id="before-canvas-container">
-      <h1>Boids Simulation 2D</h1>
-      <h2>Greg Hosking</h2>
-      <a href="https://github.com/greg-hosking" target="_blank"
-        ><i class="fa fa-github"></i
-      ></a>
-      <a href="https://www.linkedin.com/in/greg-hosking/" target="_blank"
-        ><i class="fa fa-linkedin-square"></i
-      ></a>
-    </div> -->
-  <div id="canvas-container">
-    <!-- The canvas will be programmatically inserted here. -->
-  </div>
-  <!-- <div id="after-canvas-container">
-      <div id="parameters-container">
-        <h2>Parameters</h2>
-        <div id="sliders-container"> -->
-  <!-- The sliders will be programmatically inserted here. -->
-  <!-- </div>
-        <button>Reset</button>
-        <button>Randomize</button>
-        <button>Save</button>
-        <button>Load</button>
-      </div>
-      <div id="controls-container">
-        <h2>Controls</h2>
-        <button>Reset</button>
-        <button>Play</button>
-        <button>Pause</button>
-        <button>Fast-forward</button>
-      </div>
-    </div> -->
-
-  <!---------------->
-  <!-- JavaScript -->
-  <!---------------->
-  <script>
-    // let particles = [];
-
-    // function setup() {
-    //   // const canvas = createCanvas(1280, 720);
-
-    //   // create the canvas to fill the screen
-    //   const canvas = createCanvas(windowWidth, windowHeight);
-
-
-
-    //   canvas.parent("canvas-container");
-
-    //   // createParamSliders();
-
-    //   console.log(height);
-
-    //   for (let i = 0; i < 100; i++) {
-    //     // Example: 100 particles
-    //     particles.push({
-    //       x: random(width),
-    //       y: random(height),
-    //       noiseOffsetX: random(1000),
-    //       noiseOffsetY: random(1000),
-    //     });
-    //   }
-
-    //   // Create a number of boids and add them to the boids array.
-    //   for (let i = 0; i < 200; i++) {
-    //     boids.push(new Boid(random(canvas.width), random(canvas.height)));
-    //   }
-    // }
-
-    // let waveTime = 0;
-
-    // function draw() {
-    //   background(220);
-    //   fill(255, 0, 0);
-
-    //   for (let i = 0; i <= height; i++) {
-    //     let inter = map(i, 0, height, 0, 1);
-    //     let c = lerpColor(color("#0077b6"), color("#0e2f44"), inter);
-    //     stroke(c);
-    //     line(0, i, width, i);
-    //   }
-
-    //   drawParticles();
-
-    //   noFill();
-    //   stroke(0);
-    //   // Draw rectangle for the margin.
-    //   // rect(
-    //   //   parameters.margin.value,
-    //   //   parameters.margin.value,
-    //   //   1280 - parameters.margin.value * 2,
-    //   //   720 - parameters.margin.value * 2
-    //   // );
-
-    //   for (const boid of boids) {
-    //     boid.update();
-    //     boid.draw();
-    //   }
-    // }
-
-    // function mousePressed() {
-    //   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    //     boids.push(new Boid(mouseX, mouseY));
-    //   }
-    // }
-
-    // function drawParticles() {
-    //   // particleCoords.forEach(([x, y]) => {
-    //   //   fill(255, 100); // Semi-transparent
-    //   //   noStroke();
-    //   //   circle(x, y, 2);
-    //   // });
-
-    //   particles.forEach((particle) => {
-    //     // Use noise for smooth directional movement
-    //     let angle =
-    //       noise(particle.noiseOffsetX, particle.noiseOffsetY) * TWO_PI * 2;
-    //     particle.x += cos(angle) * 0.5; // Adjust speed as needed
-    //     particle.y += sin(angle) * 0.5; // Adjust speed as needed
-
-    //     // Wrap around edges
-    //     if (particle.x < 0) particle.x = width;
-    //     if (particle.x > width) particle.x = 0;
-    //     if (particle.y < 0) particle.y = height;
-    //     if (particle.y > height) particle.y = 0;
-
-    //     // Increment noise offset
-    //     particle.noiseOffsetX += 0.01;
-    //     particle.noiseOffsetY += 0.01;
-
-    //     drawingContext.shadowOffsetX = 0;
-    //     drawingContext.shadowOffsetY = 0;
-    //     drawingContext.shadowBlur = 5; // Adjust blur radius
-    //     drawingContext.shadowColor = "white"; // Match the particle color
-
-    //     // Draw particle
-    //     fill(255);
-    //     noStroke();
-    //     ellipse(particle.x, particle.y, 0.5, 0.5); // Adjust size as needed
-    //     drawingContext.shadowBlur = 0; // Adjust blur radius
-    //   });
-    // }
-
-    // function createParamSliders() {
-    //   for (const parameter in parameters) {
-    //     createParamSlider(parameters[parameter]);
-    //   }
-    // }
-
-    // /**
-    //  * Create a slider and append it to the sliders-container div.
-    //  */
-    // function createParamSlider(parameter) {
-    // Create a div to contain the slider, label, and output elements.
-    //   const div = createDiv();
-    //   div.parent("sliders-container");
-
-    //   // Create a label for the slider and append it to the div.
-    //   const label = createElement("label", parameter.name);
-    //   label.attribute("for", parameter.id);
-    //   label.parent(div);
-
-    //   // Create the slider and append it to the div.
-    //   const slider = createSlider(
-    //     parameter.min,
-    //     parameter.max,
-    //     parameter.default,
-    //     parameter.step
-    //   );
-    //   slider.attribute("id", parameter.id);
-    //   slider.attribute("name", parameter.id);
-    //   slider.attribute("value", parameter.value);
-    //   slider.parent(div);
-
-    //   // Create an output element for the slider and append it to the div.
-    //   const output = createElement("output", parameter.default);
-    //   output.attribute("for", parameter.id);
-    //   output.parent(div);
-
-    //   // Add an input event listener to the slider to update the output element.
-    //   slider.input(() => {
-    //     Object.entries(parameters).forEach(([key, value]) => {
-    //       if (value.id === parameter.id) {
-    //         value.value = slider.value();
-    //         output.html(slider.value());
-    //       }
-    //     });
-    //   });
-
-    //   // If the parameter has the visualized property present, create a checkbox 
-    //   // to toggle the visualization.
-    //   if (parameter.visualized !== undefined) {
-    //     // Create the checkbox and append it to the div.
-    //     const checkbox = createCheckbox();
-    //     checkbox.attribute("id", `${parameter.id}-checkbox`);
-    //     checkbox.attribute("name", `${parameter.id}-checkbox`);
-    //     checkbox.attribute("value", parameter.id);
-    //     checkbox.parent(div);
-
-    //     // Add an input event listener to the checkbox to toggle the visualization.
-    //     checkbox.input(() => {
-    //       parameter.visualized = checkbox.checked();
-    //     });
-    //   }
-    // }
-
-    let tooSmall = false;
-    const minWidth = 1280;
-    const minHeight = 720;
-
-    function setup() {
-      // Create a canvas that fills the browser window initially
-      let cnv = createCanvas(windowWidth, windowHeight);
-      cnv.style('display', 'block'); // Ensures the canvas has no margin and uses the full window
-    }
-
-    function draw() {
-      // Your drawing code here
-      background(220);
-      fill(255, 0, 0);
-
-      if (isTooNarrow) {
-        textSize(32);
-        textAlign(CENTER, CENTER);
-        text('Please rotate your device', width / 2, height / 2);
-      }
-      if (tooSmall) {
-        textSize(32);
-        textAlign(CENTER, CENTER);
-        text('Window too small', width / 2, height / 2);
-      }
-
-      // Calculate and draw aspect ratio in top left of screen in the w: h format
-      let aspectRatio = width / height;
-      textSize(32);
-      textAlign(LEFT, TOP);
-      fill(0);
-      text(nf(aspectRatio, 1, 2), 10, 10);
-
-      // also print the width and height of the window
-      text(width + ' x ' + height, 10, 50);
-
-
-
-
-      // for (let i = 0; i <= height; i++) {
-      //   let inter = map(i, 0, height, 0, 1);
-      //   let c = lerpColor(color("#0077b6"), color("#0e2f44"), inter);
-      //   stroke(c);
-      //   line(0, i, width, i);
-      // }
-    }
-
-    function windowResized() {
-      // Resize the canvas when the window is resized
-      resizeCanvas(windowWidth, windowHeight);
-
-      // Optionally, prevent canvas from being too small
-      if (windowWidth < minWidth || windowHeight < minHeight) {
-        // Handle too small window size, e.g., by displaying a message or scaling
-        textSize(32);
-        textAlign(CENTER, CENTER);
-        text('Window too small', width / 2, height / 2);
-      }
-    }
-
-    let isTooNarrow;
-
-    // Listen for orientation change and handle it
-    function handleOrientationChange() {
-      isTooNarrow = window.innerWidth < window.innerHeight && window.innerWidth < minWidth;
-      // if (isTooNarrow) {
-      //   // Prompt user to rotate their device or handle the narrow width
-
-      // }
-    }
-
-    // Add event listener for device orientation change
-    window.addEventListener('orientationchange', handleOrientationChange);
-
-    // Initial check in case the user starts in an unsuitable orientation
-    handleOrientationChange();
-
-  </script>
-</body>
 
+            let waveTime = 0;
+
+            function draw() {
+                background(220);
+                fill(255, 0, 0);
+
+                for (let i = 0; i <= height; i++) {
+                    let inter = map(i, 0, height, 0, 1);
+                    let c = lerpColor(
+                        color("#0077b6"),
+                        color("#0e2f44"),
+                        inter
+                    );
+                    stroke(c);
+                    line(0, i, width, i);
+                }
+
+                drawParticles();
+
+                noFill();
+                stroke(0);
+                // Draw rectangle for the margin.
+                // rect(
+                //   parameters.margin.value,
+                //   parameters.margin.value,
+                //   1280 - parameters.margin.value * 2,
+                //   720 - parameters.margin.value * 2
+                // );
+
+                for (const boid of boids) {
+                    boid.update();
+                    boid.draw();
+                }
+            }
+
+            function mousePressed() {
+                if (
+                    mouseX > 0 &&
+                    mouseX < width &&
+                    mouseY > 0 &&
+                    mouseY < height
+                ) {
+                    boids.push(new Boid(mouseX, mouseY));
+                }
+            }
+
+            function drawParticles() {
+                particles.forEach((particle) => {
+                    // Use noise for smooth directional movement
+                    let angle =
+                        noise(particle.noiseOffsetX, particle.noiseOffsetY) *
+                        TWO_PI *
+                        2;
+                    particle.x += cos(angle) * 0.5; // Adjust speed as needed
+                    particle.y += sin(angle) * 0.5; // Adjust speed as needed
+
+                    // Wrap around edges
+                    if (particle.x < 0) particle.x = width;
+                    if (particle.x > width) particle.x = 0;
+                    if (particle.y < 0) particle.y = height;
+                    if (particle.y > height) particle.y = 0;
+
+                    // Increment noise offset
+                    particle.noiseOffsetX += 0.01;
+                    particle.noiseOffsetY += 0.01;
+
+                    drawingContext.shadowOffsetX = 0;
+                    drawingContext.shadowOffsetY = 0;
+                    drawingContext.shadowBlur = 5; // Adjust blur radius
+                    drawingContext.shadowColor = "white"; // Match the particle color
+
+                    // Draw particle
+                    fill(255);
+                    noStroke();
+                    ellipse(particle.x, particle.y, 0.5, 0.5); // Adjust size as needed
+                    drawingContext.shadowBlur = 0; // Adjust blur radius
+                });
+            }
+
+            function createParamSliders() {
+                for (const parameter in parameters) {
+                    createParamSlider(parameters[parameter]);
+                }
+            }
+
+            /**
+             * Create a slider and append it to the sliders-container div.
+             */
+            function createParamSlider(parameter) {
+                // Create a div to contain the slider, label, and output elements.
+                const div = createDiv();
+                div.parent("sliders-container");
+
+                // Create a label for the slider and append it to the div.
+                const label = createElement("label", parameter.name);
+                label.attribute("for", parameter.id);
+                label.parent(div);
+
+                // Create the slider and append it to the div.
+                const slider = createSlider(
+                    parameter.min,
+                    parameter.max,
+                    parameter.default,
+                    parameter.step
+                );
+                slider.attribute("id", parameter.id);
+                slider.attribute("name", parameter.id);
+                slider.attribute("value", parameter.value);
+                slider.parent(div);
+
+                // Create an output element for the slider and append it to the div.
+                const output = createElement("output", parameter.default);
+                output.attribute("for", parameter.id);
+                output.parent(div);
+
+                // Add an input event listener to the slider to update the output element.
+                slider.input(() => {
+                    Object.entries(parameters).forEach(([key, value]) => {
+                        if (value.id === parameter.id) {
+                            value.value = slider.value();
+                            output.html(slider.value());
+                        }
+                    });
+                });
+
+                // If the parameter has the visualized property present, create a checkbox
+                // to toggle the visualization.
+                if (parameter.visualized !== undefined) {
+                    // Create the checkbox and append it to the div.
+                    const checkbox = createCheckbox();
+                    checkbox.attribute("id", `${parameter.id}-checkbox`);
+                    checkbox.attribute("name", `${parameter.id}-checkbox`);
+                    checkbox.attribute("value", parameter.id);
+                    checkbox.parent(div);
+
+                    // Add an input event listener to the checkbox to toggle the visualization.
+                    checkbox.input(() => {
+                        parameter.visualized = checkbox.checked();
+                    });
+                }
+            }
+        </script>
+    </body>
 </html>

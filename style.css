@@ -1,92 +1,350 @@
 :root {
-  --blue: #0366d6;
+    --blue: #0366d6;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 div#before-canvas-container {
-  display: flex;
-  align-items: center;
-  gap: 1em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
 
-div#before-canvas-container>h1 {
-  margin-right: auto;
+div#before-canvas-container > h1 {
+    margin-right: auto;
 }
 
 div#before-canvas-container i.fa-github,
 div#before-canvas-container i.fa-linkedin-square {
-  font-size: 2.5em;
-  color: black;
+    font-size: 2.5em;
+    color: black;
 }
 
 div#before-canvas-container a {
-  width: auto;
-  height: auto;
+    width: auto;
+    height: auto;
 }
 
 div#before-canvas-container i.fa-github:hover,
 div#before-canvas-container i.fa-linkedin-square:hover {
-  color: var(--blue);
-  transition: 0.3s;
+    color: var(--blue);
+    transition: 0.3s;
 }
 
 div#before-canvas-container,
 div#after-canvas-container {
-  max-width: 1280px;
-  margin: 0 auto;
+    margin: 0 auto;
 }
 
 canvas {
-  display: block;
-  margin: 0 auto;
-  /* border: 2px solid black; */
+    display: block;
+    margin: 0 auto;
+    /* border: 2px solid black; */
 }
 
 body {
-  background-color: #e0f7fa;
-  /* Light blue background, reminiscent of shallow ocean water */
-  color: #0277bd;
-  /* Darker blue for text, representing deeper water */
-  font-family: 'Arial', sans-serif;
-  /* Clean, simple font */
-  margin: 0;
-  /* padding: 20px; */
+    background-color: #e0f7fa;
+    /* Light blue background, reminiscent of shallow ocean water */
+    color: #0277bd;
+    /* Darker blue for text, representing deeper water */
+    font-family: "Arial", sans-serif;
+    /* Clean, simple font */
+    margin: 0;
+    /* padding: 20px; */
 }
 
 h1,
 h2,
 h3 {
-  color: #01579b;
-  /* Even darker blue for headings */
+    color: #01579b;
+    /* Even darker blue for headings */
 }
 
 /* Customizes the whole scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  /* Adjust the width of the scrollbar */
+    width: 10px;
+    /* Adjust the width of the scrollbar */
 }
 
 /* Customizes the scrollbar track */
 ::-webkit-scrollbar-track {
-  background: #b3e5fc;
-  /* Light blue, like calm ocean water */
-  /* border-radius: 10px; */
+    background: #b3e5fc;
+    /* Light blue, like calm ocean water */
+    /* border-radius: 10px; */
 }
 
 /* Customizes the scrollbar thumb (the part that you drag) */
 ::-webkit-scrollbar-thumb {
-  background: #0288d1;
-  /* Deeper ocean blue */
-  /* border-radius: 10px; */
+    background: #0288d1;
+    /* Deeper ocean blue */
+    /* border-radius: 10px; */
 }
 
 /* Customizes the scrollbar thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #0277bd;
-  /* Slightly different blue for hover effect */
+    background: #0277bd;
+    /* Slightly different blue for hover effect */
+}
+
+/* Colors for consistency with the rest of the page */
+:root {
+    --blue: #0366d6;
+    --dark-blue: #01579b;
+    --light-blue: #e0f7fa;
+    --button-hover: #0288d1;
+    --button-background: #b3e5fc;
+    --button-text: #01579b;
+}
+
+/* Container styling for parameters */
+#parameters-container,
+#controls-container {
+    background-color: var(--light-blue);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+#parameters-container h2,
+#controls-container h2 {
+    color: var(--dark-blue);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* General button styles */
+#parameters-container button,
+#controls-container button {
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100%;
+}
+
+/* Hover effect for buttons */
+#parameters-container button:hover,
+#controls-container button:hover {
+    background-color: var(--button-hover);
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Flexbox to align buttons in rows if needed */
+#parameters-container button:nth-child(odd),
+#controls-container button:nth-child(odd) {
+    margin-right: 5px;
+}
+
+#parameters-container button:nth-child(even),
+#controls-container button:nth-child(even) {
+    margin-left: 5px;
+}
+
+#parameters-container button:active,
+#controls-container button:active {
+    transform: scale(0.98);
+}
+
+/* Slider container styling (if it needs any) */
+#sliders-container {
+    margin-bottom: 20px;
+}
+
+/* Responsive design for mobile view */
+@media (max-width: 768px) {
+    #parameters-container,
+    #controls-container {
+        padding: 15px;
+    }
+
+    #parameters-container button,
+    #controls-container button {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+/* Slider track styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #b3e5fc;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Slider thumb styling */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for slider thumb */
+input[type="range"]:hover::-webkit-slider-thumb {
+    background-color: var(--button-hover);
+    transform: scale(1.1);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+    background-color: var(--button-hover);
+    transform: scale(1.1);
+}
+
+/* Active state for when dragging the slider */
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+    transform: scale(1.2);
+}
+
+/* Container for both the canvas and parameters */
+#canvas-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#after-canvas-container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+#parameters-container,
+#controls-container {
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+/* Flexbox for larger displays */
+@media (min-width: 1024px) {
+    #canvas-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    #after-canvas-container {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20px;
+    }
+}
+
+/* For smaller displays, the parameter container stays below */
+@media (max-width: 1023px) {
+    #canvas-container {
+        display: block;
+    }
+
+    #after-canvas-container {
+        display: block;
+        margin: 0 auto;
+    }
+
+    #parameters-container,
+    #controls-container {
+        margin-top: 20px;
+    }
+}
+
+/* Ensures that the canvas does not get squished */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Overall main container settings */
+#main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+#canvas-and-parameters {
+    display: flex;
+    flex-direction: column; /* Default for small screens */
+    width: 100%;
+}
+
+/* Flexbox for larger displays */
+@media (min-width: 1024px) {
+    #canvas-and-parameters {
+        flex-direction: row; /* Change to row for large screens */
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    #canvas-container {
+        flex: 4;
+        display: block;
+    }
+
+    #after-canvas-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        /* max-width: 400px; */
+    }
+}
+
+/* Styling for the parameter container */
+#parameters-container,
+#controls-container {
+    background-color: #e0f7fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Flexbox for smaller screens (default behavior) */
+@media (max-width: 1023px) {
+    #canvas-and-parameters {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #after-canvas-container {
+        margin: 20px auto;
+    }
 }
