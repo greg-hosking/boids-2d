@@ -10,18 +10,30 @@ body {
 
 div#before-canvas-container {
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 1em;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 div#before-canvas-container > h1 {
+    margin-left: 1em;
     margin-right: auto;
 }
 
 div#before-canvas-container i.fa-github,
 div#before-canvas-container i.fa-linkedin-square {
     font-size: 2.5em;
-    color: black;
+    color: #01579b;
+}
+
+div#before-canvas-container i.fa-linkedin-square {
+    margin-right: 1em;
 }
 
 div#before-canvas-container a {
@@ -31,7 +43,8 @@ div#before-canvas-container a {
 
 div#before-canvas-container i.fa-github:hover,
 div#before-canvas-container i.fa-linkedin-square:hover {
-    color: var(--blue);
+    color: #0288d1;
+    color: #003c6b;
     transition: 0.3s;
 }
 
@@ -47,7 +60,8 @@ canvas {
 }
 
 body {
-    background-color: #e0f7fa;
+    background-color: #0e2f44;
+    background: linear-gradient(to bottom, #0077b6, #0e2f44);
     /* Light blue background, reminiscent of shallow ocean water */
     color: #0277bd;
     /* Darker blue for text, representing deeper water */
@@ -237,22 +251,28 @@ input[type="range"]:active::-moz-range-thumb {
     display: flex;
     justify-content: center;
     margin: 0 auto;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 #after-canvas-container {
     max-width: 1280px;
     margin: 0 auto;
+    position: absolute;
+    top: 0px;
+    right: 0px;
 }
 
 #parameters-container,
 #controls-container {
     margin: 20px auto;
     max-width: 400px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 /* Flexbox for larger displays */
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
     #canvas-container {
         display: flex;
         justify-content: space-between;
@@ -265,10 +285,10 @@ input[type="range"]:active::-moz-range-thumb {
         flex-direction: column;
         margin-left: 20px;
     }
-}
+} */
 
 /* For smaller displays, the parameter container stays below */
-@media (max-width: 1023px) {
+/* @media (max-width: 1023px) {
     #canvas-container {
         display: block;
     }
@@ -282,16 +302,16 @@ input[type="range"]:active::-moz-range-thumb {
     #controls-container {
         margin-top: 20px;
     }
-}
+} */
 
 /* Ensures that the canvas does not get squished */
-canvas {
+/* canvas {
     max-width: 100%;
     height: auto;
-}
+} */
 
 /* Overall main container settings */
-#main-container {
+/* #main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -301,14 +321,14 @@ canvas {
 
 #canvas-and-parameters {
     display: flex;
-    flex-direction: column; /* Default for small screens */
+    flex-direction: column; 
     width: 100%;
-}
+} */
 
 /* Flexbox for larger displays */
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
     #canvas-and-parameters {
-        flex-direction: row; /* Change to row for large screens */
+        flex-direction: row; 
         justify-content: space-between;
         align-items: flex-start;
         gap: 20px;
@@ -323,22 +343,21 @@ canvas {
         flex: 1;
         display: flex;
         flex-direction: column;
-        /* max-width: 400px; */
     }
-}
+} */
 
 /* Styling for the parameter container */
-#parameters-container,
+/* #parameters-container,
 #controls-container {
     background-color: #e0f7fa;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-}
+} */
 
 /* Flexbox for smaller screens (default behavior) */
-@media (max-width: 1023px) {
+/* @media (max-width: 1023px) {
     #canvas-and-parameters {
         flex-direction: column;
         width: 100%;
@@ -347,4 +366,4 @@ canvas {
     #after-canvas-container {
         margin: 20px auto;
     }
-}
+} */
