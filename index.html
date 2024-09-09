@@ -360,17 +360,12 @@
 
             function setup() {
                 const soundtrack = document.getElementById("soundtrack").play();
-
-                // const canvas = createCanvas(1280, 720);
-                // const canvas = createCanvas(1920, 1080);
                 const canvas = createCanvas(
                     window.innerWidth,
                     window.innerHeight
                 );
                 canvas.parent("canvas-container");
-
                 // createParamSliders();
-
                 for (let i = 0; i < 100; i++) {
                     // Example: 100 particles
                     particles.push({
@@ -442,8 +437,8 @@
                         noise(particle.noiseOffsetX, particle.noiseOffsetY) *
                         TWO_PI *
                         2;
-                    particle.x += cos(angle) * 0.5; // Adjust speed as needed
-                    particle.y += sin(angle) * 0.5; // Adjust speed as needed
+                    particle.x += cos(angle) * 0.5;
+                    particle.y += sin(angle) * 0.5;
 
                     // Wrap around edges
                     if (particle.x < 0) particle.x = width;
@@ -457,14 +452,14 @@
 
                     drawingContext.shadowOffsetX = 0;
                     drawingContext.shadowOffsetY = 0;
-                    drawingContext.shadowBlur = 5; // Adjust blur radius
-                    drawingContext.shadowColor = "white"; // Match the particle color
+                    drawingContext.shadowBlur = 5;
+                    drawingContext.shadowColor = "white";
 
                     // Draw particle
                     fill(255);
                     noStroke();
-                    ellipse(particle.x, particle.y, 0.5, 0.5); // Adjust size as needed
-                    drawingContext.shadowBlur = 0; // Adjust blur radius
+                    ellipse(particle.x, particle.y, 0.5, 0.5);
+                    drawingContext.shadowBlur = 0;
                 });
             }
 
